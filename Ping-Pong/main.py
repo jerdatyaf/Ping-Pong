@@ -39,7 +39,7 @@ Board2 = Player("racket.png", 900, 500, 39, 136, 4)
 Clocks = time.Clock()
 game = True
 FPS = 60
-while game:
+while game: # Hi
 
     for e in event.get():
         if e.type == QUIT:
