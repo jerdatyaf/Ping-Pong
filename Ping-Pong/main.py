@@ -24,22 +24,18 @@ class Player(GameSprite):
         keys = key.get_pressed()
         if keys[K_w] and self.rect.y > 5:
             self.rect.y -= self.speed
+            self.direction = "up"
         if keys[K_s] and self.rect.y < 600:
             self.rect.y += self.speed
-    def update_r(self):
-        keys = key.get_pressed()
-        if keys[K_UP] and self.rect.y > 5:
-            self.rect.y -= self.speed
-        if keys[K_DOWN] and self.rect.y < 600:
-            self.rect.y += self.speed
+            self.direction = "down"
 
 class Ball(GameSprite):
     def update(self):
         pass
 
-Board1 = Player("racket.png", 100, 500, 39, 136, 4)
+Board1 = Player("racket.png", 100, 500, 39, 136, 10)
 Board2 = Player("racket.png", 900, 500, 39, 136, 4)
-ball = Ball("tenis_ball.png", 500,400,50,50,3)
+ball = Ball("tenis_ball.png", 500,400,50,50,6)
 
 font.init()
 
@@ -54,6 +50,7 @@ Clocks = time.Clock()
 game = True
 FPS = 60
 finish = False
+direction = "up"
 while game:
     for e in event.get():
         if e.type == QUIT:
@@ -64,10 +61,28 @@ while game:
         ball.rect.x += ball_speed_x
         ball.rect.y += ball_speed_y
 
+        Board2.rect.y = ball.rect.y
+        #Board1.rect.y = ball.rect.y
+
         if ball.rect.y >= 650 or ball.rect.y <= 0:
             ball_speed_y *= -1
 
-        if sprite.collide_rect(ball, Board1) or sprite.collide_rect(ball, Board2):
+        if sprite.collide_rect(ball, Board1):
+            ball_speed_x *= -1
+            if Board1.direction == "up" and ball_speed_y < 0:
+                ball_speed_y = -12
+                ball_speed_x = 8
+            elif Board1.direction == "down" and ball_speed_y > 0:
+                ball_speed_y = 12
+                ball_speed_x = 8
+            elif Board1.direction == "down" and ball_speed_y < 0:
+                ball_speed_y = 10
+                ball_speed_x = 10
+            elif Board1.direction == "up" and ball_speed_y > 0:
+                ball_speed_y = -10
+                ball_speed_x = 10
+
+        if sprite.collide_rect(ball, Board2):
             ball_speed_x *= -1
 
         if ball.rect.x < 0:
@@ -78,7 +93,6 @@ while game:
             finish = True
 
         Board1.update_l()
-        Board2.update_r()
         Board1.reset()
         Board2.reset()
         ball.reset()
