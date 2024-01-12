@@ -33,24 +33,55 @@ class Player(GameSprite):
         if keys[K_DOWN] and self.rect.y < 600:
             self.rect.y += self.speed
 
+class Ball(GameSprite):
+    def update(self):
+        pass
+
 Board1 = Player("racket.png", 100, 500, 39, 136, 4)
 Board2 = Player("racket.png", 900, 500, 39, 136, 4)
+ball = Ball("tenis_ball.png", 500,400,50,50,3)
+
+font.init()
+
+font1 = font.Font(None, 45)
+Text2 = font1.render("PLAYER 1 LOOSE", True, (255,0,0))
+Text1 = font1.render("PLAYER 2 LOOSE", True, (255,0,0))
+
+ball_speed_x = 5
+ball_speed_y = 5
 
 Clocks = time.Clock()
 game = True
 FPS = 60
-while game: # Hi
-
+finish = False
+while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+    if not finish:
+        window.blit(background, (0,0))
 
-    window.blit(background, (0,0))
+        ball.rect.x += ball_speed_x
+        ball.rect.y += ball_speed_y
 
-    Board1.update_l()
-    Board2.update_r()
-    Board1.reset()
-    Board2.reset()
+        if ball.rect.y >= 650 or ball.rect.y <= 0:
+            ball_speed_y *= -1
+
+        if sprite.collide_rect(ball, Board1) or sprite.collide_rect(ball, Board2):
+            ball_speed_x *= -1
+
+        if ball.rect.x < 0:
+            window.blit(Text2, (400,350))
+            finish = True
+        if ball.rect.x > 1000:
+            window.blit(Text1, (400,350))
+            finish = True
+
+        Board1.update_l()
+        Board2.update_r()
+        Board1.reset()
+        Board2.reset()
+        ball.reset()
 
     display.update()
     Clocks.tick(FPS)
